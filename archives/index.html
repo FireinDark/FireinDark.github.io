@@ -120,6 +120,73 @@
     
 
     <div class="blog-post-block-padding">
+        <a href="/2019/06/10/C10k问题/">C10k问题</a>
+        <section>
+            
+                
+                C10K问题及解决方案
+&lt;! –more– &gt;
+1. C10K问题大家都知道互联网的基础就是网络通信，早期的互联网可以说是一个小群体的集合。互联网还不够普及，用户也不多。一台服务器同时在线100个用户估计在当时已经算是大型应用了。所以并不存在什么C10K的难题。互联网的爆发期应该是在www网站，浏览器，雅虎出现后。最早的互联网称之为Web1.0，互联网大部分的使用场景是下载一个Html页面，用户在浏览器中查看网页上的信息。这个时期也不存在C10K问题。
+Web2.0时代到来后就不同了，一方面是普及率大大提高了，用户群体几何倍增长。另一方面是互联网不再是单纯的浏览万维网网页，逐渐开始进行交互，而且应用程序的逻辑也变的更复杂，从简单的表单提交，到即时通信和在线实时互动。C10K的问题才体现出来了。每一个用户都必须与服务器保持TCP连接才能进行实时的数据交互。Facebook这样的网站同一时间的并发TCP连接可能会过亿。
+腾讯QQ也是有C10K问题的，只不过他们是用了UDP这种原始的包交换协议来实现的，绕开了这个难题。当然过程肯定是痛苦的。如果当时有epoll技术，他们肯定会用TCP。后来的手机QQ，微信都采用TCP协议。
+这时候问题就来了，最初的服务器都是基于进程/线程模型的，新到来一个TCP连接，就需要分配1个进程（或者线程）。而进程又是操作系统最昂贵的资源，一台机器无法创建很多进程。如果是C10K就要创建1万个进程，那么操作系统是无法承受的。如果是采用分布式系统，维持1亿用户在线需要10万台服务器，成本巨大，也只有Facebook，Google，雅虎才有财力购买如此多的服务器。这就是C10K问题的本质。
+实际上当时也有异步模式，如：select/poll模型，这些技术都有一定的缺点，如selelct最大不能超过1024，poll没有限制，但每次收到数据需要遍历每一个连接查看哪个连接有数据请求。
+2 解决方案解决这一问题，主要思路有两个：一个是对于每个连接处理分配一个独立的进程/线程；另一个思路是用同一进程/线程来同时处理若干连接。
+2.1 每个进程/线程处理一个连接这一思路最为直接。但是由于申请进程/线程会占用相当可观的系统资源，同时对于多进程/线程的管理会对系统造成压力，因此这种方案不具备良好的可扩展性。
+因此，这一思路在服务器资源还没有富裕到足够程度的时候，是不可行的；即便资源足够富裕，效率也不够高。
+问题：资源占用过多，可扩展性差。 
+2.2 每个进程/线程同时处理多个连接（IO多路复用）
+传统思路  
+  最简单的方法是循环挨个处理各个连接，每个连接对应一个 socket，当所有 socket 都有数据的时候，这种方法是可行的。  
+  但是当应用读取某个 socket 的文件数据不 ready 的时候，整个应用会阻塞在这里等待该文件句柄，即使别的文件句柄 ready，也无法往下处理。
+
+思路：直接循环处理多个连接。
+  问题：任一文件句柄的不成功会阻塞住整个应用。
+  select  要解决上面阻塞的问题，思路很简单，如果我在读取文件句柄之前，先查下它的状态，ready 了就进行处理，不 ready 就不进行处理，这不就解决了这个问题了嘛？
+  于是有了 select 方案。用一个 fd_set 结构体来告诉内核同时监控多个文件句柄，当其中有文件句柄的状态发生指定变化（例如某句柄由不可用变为可用）或超时，则调用返回。之后应用可以使用 FD_ISSET 来逐个查看是哪个文件句柄的状态发生了变化。
+  这样做，小规模的连接问题不大，但当连接数很多（文件句柄个数很多）的时候，逐个检查状态就很慢了。因此，select 往往存在管理的句柄上限（FD_SETSIZE）。同时，在使用上，因为只有一个字段记录关注和发生事件，每次调用之前要重新初始化 fd_set 结构体。  int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
+
+
+
+思路：有连接请求抵达了再检查处理。
+  问题：句柄上限+重复初始化+逐个排查所有文件句柄状态效率不高。
+  poll  poll 主要解决 select 的前两个问题：通过一个 pollfd 数组向内核传递需要关注的事件消除文件句柄上限，同时使用不同字段分别标注关注事件和发生事件，来避免重复初始化。
+  int poll(struct pollfd *fds, nfds_t nfds, int timeout);  思路：设计新的数据结构提供使用效率。
+  问题：逐个排查所有文件句柄状态效率不高。
+  epoll  既然逐个排查所有文件句柄状态效
+                ...
+            
+        </section>
+        <footer>
+        
+            <time datetime="2019-06-10T03:34:26.000Z"><i class="fa fa-clock-o"></i>2019-06-10</time>
+        
+        
+        
+        <span>
+            <i class="fa fa-eye"></i>
+            <span id="/2019/06/10/C10k问题/" class="views" title="C10k问题"></span>
+        </span>
+        
+        
+        
+          <span><i class="fa fa-folder-o"></i>
+            
+              <a href="/categories/计算机/" itemprop="url" rel="index">
+                计算机
+              </a>
+            
+          </span>
+        
+        </footer>
+    </div>
+</article>
+
+
+<article class="blog-post-block">
+    
+
+    <div class="blog-post-block-padding">
         <a href="/2019/06/06/hello-world/">hello</a>
         <section>
             
@@ -212,11 +279,11 @@
             </div>
             <div class="blog-sidebar-count blog-sidebar-padding">
                 <div class="blog-sidebar-count-left">
-                    <p class="blog-sidebar-count-p">2</p>
+                    <p class="blog-sidebar-count-p">3</p>
                     <span class="blog-sidebar-count-span">文章</span>
                 </div>
                 <div class="blog-sidebar-count-right">
-                    <p class="blog-sidebar-count-p">2</p>
+                    <p class="blog-sidebar-count-p">3</p>
                     <span class="blog-sidebar-count-span">标签</span>
                 </div>
                 <div style="clear: both;"></div>
@@ -243,7 +310,7 @@
                     
                       <li class="list-group-item justify-content-between">
                           <a href="/categories/计算机/">计算机</a>
-                          <span class="badge badge-default badge-pill">1</span>
+                          <span class="badge badge-default badge-pill">2</span>
                       </li>
                     
                   
@@ -257,6 +324,8 @@
                       <li><a href="/tags/introduce/" class="tag-could" data-toggle="tooltip" data-placement="top" title="introduce">introduce</a></li>
                     
                       <li><a href="/tags/it/" class="tag-could" data-toggle="tooltip" data-placement="top" title="it">it</a></li>
+                    
+                      <li><a href="/tags/网络模型/" class="tag-could" data-toggle="tooltip" data-placement="top" title="网络模型">网络模型</a></li>
                     
                   
                 </ul>
