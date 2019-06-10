@@ -158,12 +158,16 @@
 <li><p>思路：有连接请求抵达了再检查处理。</p>
 <p>  问题：句柄上限+重复初始化+逐个排查所有文件句柄状态效率不高。</p>
 <p>  poll<br>  poll 主要解决 select 的前两个问题：通过一个 pollfd 数组向内核传递需要关注的事件消除文件句柄上限，同时使用不同字段分别标注关注事件和发生事件，来避免重复初始化。</p>
-<p>  int poll(struct pollfd *fds, nfds_t nfds, int timeout);<br>  思路：设计新的数据结构提供使用效率。</p>
+<p>  int poll(struct pollfd *fds, nfds_t nfds, int timeout);  </p>
+</li>
+<li><p>思路：设计新的数据结构提供使用效率。  </p>
 <p>  问题：逐个排查所有文件句柄状态效率不高。</p>
 <p>  epoll<br>  既然逐个排查所有文件句柄状态效率不高，很自然的，如果调用返回的时候只给应用提供发生了状态变化（很可能是数据 ready）的文件句柄，进行排查的效率不就高多了么。</p>
 <p>  epoll采用了这种设计，适用于大规模的应用场景。</p>
 <p>  实验表明，当文件句柄数目超过 10 之后，epoll 性能将优于 select 和 poll；当文件句柄数目达到 10K 的时候，epoll 已经超过 select 和 poll 两个数量级。</p>
-<p>  int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);<br>  思路：只返回状态变化的文件句柄。</p>
+<p>  int epoll_wait(int epfd, struct epoll_event *events, int maxevents, int timeout);  </p>
+</li>
+<li><p>思路：只返回状态变化的文件句柄。  </p>
 <p>  问题：依赖特定平台（Linux）。</p>
 <p>  因为Linux是互联网企业中使用率最高的操作系统，Epoll就成为C10K killer、高并发、高性能、异步非阻塞这些技术的代名词了。FreeBSD推出了kqueue，Linux推出了epoll，Windows推出了IOCP，Solaris推出了/dev/poll。这些操作系统提供的功能就是为了解决C10K问题。epoll技术的编程模型就是异步非阻塞回调，也可以叫做Reactor，事件驱动，事件轮循（EventLoop）。Nginx，libevent，node.js这些就是Epoll时代的产物。</p>
 <p>  select、poll、epoll具体原理详解，请参见：《聊聊IO多路复用之select、poll、epoll详解》。</p>
