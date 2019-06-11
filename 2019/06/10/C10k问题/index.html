@@ -133,7 +133,7 @@
     <article class="blog-post-block blog-post-page-content">
         <section>
             
-                <h1 id="1-C10K问题"><a href="#1-C10K问题" class="headerlink" title="1. C10K问题"></a>1. C10K问题</h1><p>大家都知道互联网的基础就是网络通信，早期的互联网可以说是一个小群体的集合。互联网还不够普及，用户也不多。一台服务器同时在线100个用户估计在当时已经算是大型应用了。所以并不存在什么C10K的难题。互联网的爆发期应该是在www网站，浏览器，雅虎出现后。最早的互联网称之为Web1.0，互联网大部分的使用场景是下载一个Html页面，用户在浏览器中查看网页上的信息。这个时期也不存在C10K问题。</p>
+                <h1 id="1-C10K问题及其解决方案"><a href="#1-C10K问题及其解决方案" class="headerlink" title="1. C10K问题及其解决方案"></a>1. C10K问题及其解决方案</h1><p>大家都知道互联网的基础就是网络通信，早期的互联网可以说是一个小群体的集合。互联网还不够普及，用户也不多。一台服务器同时在线100个用户估计在当时已经算是大型应用了。所以并不存在什么C10K的难题。互联网的爆发期应该是在www网站，浏览器，雅虎出现后。最早的互联网称之为Web1.0，互联网大部分的使用场景是下载一个Html页面，用户在浏览器中查看网页上的信息。这个时期也不存在C10K问题。</p>
 <p>Web2.0时代到来后就不同了，一方面是普及率大大提高了，用户群体几何倍增长。另一方面是互联网不再是单纯的浏览万维网网页，逐渐开始进行交互，而且应用程序的逻辑也变的更复杂，从简单的表单提交，到即时通信和在线实时互动。C10K的问题才体现出来了。每一个用户都必须与服务器保持TCP连接才能进行实时的数据交互。Facebook这样的网站同一时间的并发TCP连接可能会过亿。</p>
 <p>腾讯QQ也是有C10K问题的，只不过他们是用了UDP这种原始的包交换协议来实现的，绕开了这个难题。当然过程肯定是痛苦的。如果当时有epoll技术，他们肯定会用TCP。后来的手机QQ，微信都采用TCP协议。</p>
 <p>这时候问题就来了，最初的服务器都是基于进程/线程模型的，新到来一个TCP连接，就需要分配1个进程（或者线程）。而进程又是操作系统最昂贵的资源，一台机器无法创建很多进程。如果是C10K就要创建1万个进程，那么操作系统是无法承受的。如果是采用分布式系统，维持1亿用户在线需要10万台服务器，成本巨大，也只有Facebook，Google，雅虎才有财力购买如此多的服务器。这就是C10K问题的本质。</p>
@@ -214,10 +214,10 @@
     	
     	
 		
+			<a href="/2019/06/11/drf01/" class="blog-post-page-readmore-prev" data-toggle="tooltip" data-placement="top" title="Django-Rest-Framework快速入门">上一篇</a>
+		
 
 		
-		
-			<a href="/2019/06/06/hello-world/" class="blog-post-page-readmore-next" data-toggle="tooltip" data-placement="top" title="hello">下一篇</a>
 		
 
         <div style="clear: both;"></div>
@@ -346,11 +346,11 @@
             </div>
             <div class="blog-sidebar-count blog-sidebar-padding">
                 <div class="blog-sidebar-count-left">
-                    <p class="blog-sidebar-count-p">3</p>
+                    <p class="blog-sidebar-count-p">2</p>
                     <span class="blog-sidebar-count-span">文章</span>
                 </div>
                 <div class="blog-sidebar-count-right">
-                    <p class="blog-sidebar-count-p">3</p>
+                    <p class="blog-sidebar-count-p">2</p>
                     <span class="blog-sidebar-count-span">标签</span>
                 </div>
                 <div style="clear: both;"></div>
@@ -371,13 +371,13 @@
                   
                     
                       <li class="list-group-item justify-content-between">
-                          <a href="/categories/我的项目/">我的项目</a>
+                          <a href="/categories/Python/">Python</a>
                           <span class="badge badge-default badge-pill">1</span>
                       </li>
                     
                       <li class="list-group-item justify-content-between">
                           <a href="/categories/计算机/">计算机</a>
-                          <span class="badge badge-default badge-pill">2</span>
+                          <span class="badge badge-default badge-pill">1</span>
                       </li>
                     
                   
@@ -388,9 +388,7 @@
                 <ul class="blog-sidebar-tags-ul blog-sidebar-padding">
                   
                     
-                      <li><a href="/tags/introduce/" class="tag-could" data-toggle="tooltip" data-placement="top" title="introduce">introduce</a></li>
-                    
-                      <li><a href="/tags/it/" class="tag-could" data-toggle="tooltip" data-placement="top" title="it">it</a></li>
+                      <li><a href="/tags/Django-Rest-Framework/" class="tag-could" data-toggle="tooltip" data-placement="top" title="Django-Rest-Framework">Django-Rest-Framework</a></li>
                     
                       <li><a href="/tags/网络模型/" class="tag-could" data-toggle="tooltip" data-placement="top" title="网络模型">网络模型</a></li>
                     
