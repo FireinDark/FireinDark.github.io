@@ -20,7 +20,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
   <meta name="renderer" content="webkit">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" , user-scalable="no"">
-  <title>Django-Rest-Framework-02-Rest接口新版写法FireinDark的个人博客</title>
+  <title>Django-Rest-Framework-02-请求和响应FireinDark的个人博客</title>
   <link rel="shortcut icon" href="favicon.ico">
   
     
@@ -109,13 +109,13 @@
             </header>
                 
 <header class="blog-post-page-title">
-    <h4>Django-Rest-Framework-02-Rest接口新版写法</h4>
-    <time datetime="2019-06-11T10:30:43.000Z"><i class="fa fa-clock-o"></i>2019-06-11</time>
+    <h4>Django-Rest-Framework-02-请求和响应</h4>
+    <time datetime="2019-06-11T10:45:38.000Z"><i class="fa fa-clock-o"></i>2019-06-11</time>
     
     
     <span>
         <i class="fa fa-eye"></i>
-        <span id="/2019/06/11/drf02/" class="views views-post" title="Django-Rest-Framework-02-Rest接口新版写法"></span>
+        <span id="/2019/06/11/drf03/" class="views views-post" title="Django-Rest-Framework-02-请求和响应"></span>
     </span>
     
     
@@ -133,21 +133,76 @@
     <article class="blog-post-block blog-post-page-content">
         <section>
             
-                <h2 id="REST框架简介"><a href="#REST框架简介" class="headerlink" title="REST框架简介"></a>REST框架简介</h2><ol>
-<li>身份验证策略OAuth1a和OAuth2的包</li>
-<li>支持ORM和非ORM数据源的序列化</li>
-<li>可以自定义，基于功能的常规视图</li>
-</ol>
-<h2 id="简单的接口写法"><a href="#简单的接口写法" class="headerlink" title="简单的接口写法"></a>简单的接口写法</h2><ol>
-<li><p>设置settings</p>
-<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">INSTALLED_APPS = (</span><br><span class="line">     ...</span><br><span class="line">     <span class="string">'rest_framework'</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="meta"># 配置我们框架</span></span><br><span class="line">REST_FRAMEWORK = &#123;</span><br><span class="line"><span class="meta"># 设置权限，即谁可以访问，如认证过的，匿名的等</span></span><br><span class="line"><span class="string">'DEFAULT_PERMISSION_CLASSES'</span>: [</span><br><span class="line">    <span class="string">'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'</span></span><br><span class="line">]，</span><br><span class="line"><span class="meta"># 每页显示的个数</span></span><br><span class="line"> <span class="string">'PAGE_SIZE'</span>: <span class="number">10</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>REST框架的登录和注销视图,设置urls.py,</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> routers</span><br><span class="line"><span class="comment"># 建立一个路由器对象</span></span><br><span class="line">router = routers.DefaultRouter()</span><br><span class="line"><span class="comment"># 将我们的路由注册到url里， /users/</span></span><br><span class="line">router.register(<span class="string">r'users'</span>, UserViewSet)</span><br><span class="line">urlpatterns = [</span><br><span class="line">    url(<span class="string">r'^'</span>, include(router.urls)),</span><br><span class="line">    url(<span class="string">r'^api-auth/'</span>, include(<span class="string">'rest_framework.urls'</span>, namespace=<span class="string">'rest_framework'</span>))</span><br><span class="line">]</span><br><span class="line"><span class="comment"># URL路径可以是任何你想要的，但你必须包括'rest_framework.urls'与'rest_framework'命名空间, 1.9以前</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在app中添加我们的序列器，serializer.py</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> django.conf.urls <span class="keyword">import</span> url, include</span><br><span class="line"><span class="keyword">from</span> django.contrib.auth.models <span class="keyword">import</span> User</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> routers, serializers, viewsets</span><br><span class="line"></span><br><span class="line"><span class="comment"># Serializers define the API representation.</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">UserSerializer</span><span class="params">(serializers.HyperlinkedModelSerializer)</span>:</span></span><br><span class="line">        <span class="class"><span class="keyword">class</span> <span class="title">Meta</span>:</span></span><br><span class="line">            model = User</span><br><span class="line">            <span class="comment"># 定义了我们序列化的模型和显示的字段， url为网络接口</span></span><br><span class="line">            fields = (<span class="string">'url'</span>, <span class="string">'username'</span>, <span class="string">'email'</span>, <span class="string">'is_staff'</span>)</span><br><span class="line">            </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserViewSet</span><span class="params">(viewsets.ModelViewSet)</span>:</span></span><br><span class="line">    <span class="comment"># 查询对象集</span></span><br><span class="line">    queryset = User.objects.all()</span><br><span class="line">    <span class="comment"># 序列化的类名</span></span><br><span class="line">    serializer_class = UserSerializer</span><br><span class="line">    <span class="comment"># 固定写法！不能改名字！</span></span><br></pre></td></tr></table></figure></li>
-</ol>
+                <h2 id="1-请求对象"><a href="#1-请求对象" class="headerlink" title="1. 请求对象"></a>1. 请求对象</h2><pre><code>request扩展的对象HttpRequest
+核心功能， request.data属性，和request.POST类似</code></pre><h2 id="2-响应对象"><a href="#2-响应对象" class="headerlink" title="2. 响应对象"></a>2. 响应对象</h2><pre><code>Response对象，按指定的congtent-type渲染数据，并返回给客户端</code></pre><h2 id="3-状态码（status）"><a href="#3-状态码（status）" class="headerlink" title="3. 状态码（status）"></a>3. 状态码（status）</h2><pre><code>100继续请求者应当继续提出请求。服务器已收到请求的一部分，正在等待其余部分。
+101切换协议请求者已要求服务器切换协议，服务器已确认并准备切换。
+200成功服务器已成功处理了请求。
+201已创建请求成功并且服务器创建了新的资源。
+202已接受服务器已接受请求，但尚未处理。
+203非授权信息服务器已成功处理了请求，但返回的信息可能来自另一来源。
+204无内容服务器成功处理了请求，但没有返回任何内容。
+205重置内容服务器成功处理了请求，内容被重置。
+206部分内容服务器成功处理了部分请求。
+300多种选择针对请求，服务器可执行多种操作。
+301永久移动请求的网页已永久移动到新位置，即永久重定向。
+302临时移动请求的网页暂时跳转到其他页面，即暂时重定向。（django redirect 采用）
+303查看其他位置如果原来的请求是 POST，重定向目标文档应该通过 GET 提取。(将post方法重定向为get方法)
+304未修改此次请求返回的网页未修改，继续使用上次的资源。使用缓存
+305使用代理请求者应该使用代理访问该网页。
+307临时重定向请求的资源临时从其他位置响应。
+400错误请求服务器无法解析该请求。
+401未授权请求没有进行身份验证或验证未通过。
+403禁止访问服务器拒绝此请求。
+404未找到服务器找不到请求的网页。
+405方法禁用服务器禁用了请求中指定的方法。
+406不接受无法使用请求的内容响应请求的网页。
+407需要代理授权请求者需要使用代理授权。
+408请求超时服务器请求超时。
+409冲突服务器在完成请求时发生冲突。
+410已删除请求的资源已永久删除。
+411需要有效长度服务器不接受不含有效内容长度标头字段的请求。
+412未满足前提条件服务器未满足请求者在请求中设置的其中一个前提条件。
+413请求实体过大请求实体过大，超出服务器的处理能力。
+414请求 URI 过长请求网址过长，服务器无法处理。
+415不支持类型请求的格式不受请求页面的支持。
+416请求范围不符页面无法提供请求的范围。
+417未满足期望值服务器未满足期望请求标头字段的要求。
+500服务器内部错误服务器遇到错误，无法完成请求。
+501未实现服务器不具备完成请求的功能。
+502错误网关服务器作为网关或代理，从上游服务器收到无效响应。
+503服务不可用服务器目前无法使用。
+504网关超时服务器作为网关或代理，但是没有及时从上游服务器收到请求。
+505HTTP 版本不支持服务器不支持请求中所用的 HTTP 协议版本。</code></pre><h2 id="4-包装API视图"><a href="#4-包装API视图" class="headerlink" title="4. 包装API视图"></a>4. 包装API视图</h2><pre><code>两种方法：利用@api_view装饰器，装饰函数，另一种是基于类的APIView.
+装饰器提供了少量的功能，如确保接收Request，和添加内容到Response对象中，也提供了一些常见的异常响应对象，当接收的数据request.data出现错误时，如405 Method Not Allowed，</code></pre><h2 id="5-使用实例"><a href="#5-使用实例" class="headerlink" title="5. 使用实例"></a>5. 使用实例</h2><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"># 利用qpp_view装饰器时，不再需要JSONResponse对象</span><br><span class="line">from rest_framework <span class="keyword">import</span> status</span><br><span class="line">from rest_framework.decorators <span class="keyword">import</span> api_view</span><br><span class="line">from rest_framework.response <span class="keyword">import</span> Response</span><br><span class="line">from snippets.models <span class="keyword">import</span> Snippet</span><br><span class="line">from snippets.serializers <span class="keyword">import</span> SnippetSerializer</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@api_view([<span class="meta-string">'GET'</span>, <span class="meta-string">'POST'</span>])</span></span><br><span class="line">def snippet_list(request):</span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">'GET'</span>:</span><br><span class="line">        snippets = Snippet.objects.all()</span><br><span class="line">        serializer = SnippetSerializer(snippets, many=True)</span><br><span class="line">        <span class="keyword">return</span> Response(serializer.<span class="keyword">data</span>)</span><br><span class="line"></span><br><span class="line">    elif request.method == <span class="string">'POST'</span>:</span><br><span class="line">        serializer = SnippetSerializer(<span class="keyword">data</span>=request.<span class="keyword">data</span>)</span><br><span class="line">        <span class="keyword">if</span> serializer.is_valid():</span><br><span class="line">            serializer.save()</span><br><span class="line">            <span class="keyword">return</span> Response(serializer.<span class="keyword">data</span>, status=status.HTTP_201_CREATED)</span><br><span class="line">        <span class="keyword">return</span> Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 单独对象，使用方法<span class="string">'GET'</span>, <span class="string">'PUT'</span>, <span class="string">'DELETE'</span>（终于有用了！！！）</span><br><span class="line"><span class="meta">@api_view([<span class="meta-string">'GET'</span>, <span class="meta-string">'PUT'</span>, <span class="meta-string">'DELETE'</span>])</span></span><br><span class="line">def snippet_detail(request, pk):</span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    Retrieve, update or delete a snippet instance.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        snippet = Snippet.objects.<span class="keyword">get</span>(pk=pk)</span><br><span class="line">    except Snippet.DoesNotExist:</span><br><span class="line">        <span class="keyword">return</span> Response(status=status.HTTP_404_NOT_FOUND)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">'GET'</span>:</span><br><span class="line">        serializer = SnippetSerializer(snippet)</span><br><span class="line">        <span class="keyword">return</span> Response(serializer.<span class="keyword">data</span>)</span><br><span class="line"></span><br><span class="line">    elif request.method == <span class="string">'PUT'</span>:</span><br><span class="line">        serializer = SnippetSerializer(snippet, <span class="keyword">data</span>=request.<span class="keyword">data</span>)</span><br><span class="line">        <span class="keyword">if</span> serializer.is_valid():</span><br><span class="line">            serializer.save()</span><br><span class="line">            <span class="keyword">return</span> Response(serializer.<span class="keyword">data</span>)</span><br><span class="line">        <span class="keyword">return</span> Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)</span><br><span class="line"></span><br><span class="line">    elif request.method == <span class="string">'DELETE'</span>:</span><br><span class="line">        snippet.delete()</span><br><span class="line">        <span class="keyword">return</span> Response(status=status.HTTP_204_NO_CONTENT)</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="6-为网址添加后缀（format参数）"><a href="#6-为网址添加后缀（format参数）" class="headerlink" title="6. 为网址添加后缀（format参数）"></a>6. 为网址添加后缀（format参数）</h2><pre><code>def snippet_list(request, format=None):
+def snippet_detail(request, pk, format=None):
+#更新urls.py
+urlpatterns = [
+url(r&apos;^snippets/$&apos;, views.snippet_list),
+url(r&apos;^snippets/(?P&lt;pk&gt;[0-9]+)$&apos;, views.snippet_detail),
+]
+# 设置后缀
+urlpatterns = format_suffix_patterns(urlpatterns)
+
+
+# 在网页端，我们利用Accept设置接收数据的格式
+http http://127.0.0.1:8000/snippets/ Accept:application/json  # Request JSON
+http http://127.0.0.1:8000/snippets/ Accept:text/html         # Request HTML
+# 或者在服务器端为网址添上后缀
+http http://127.0.0.1:8000/snippets.json  # JSON suffix
+http http://127.0.0.1:8000/snippets.api   # Browsable API suffix
+# 所以我们向浏览器返回的其实是可浏览的HTML表示
+
+# 网页端利用Content-Type请求头设置，来格式化向服务器请求的数据</code></pre><h2 id="7-常用的method"><a href="#7-常用的method" class="headerlink" title="7. 常用的method"></a>7. 常用的method</h2><pre><code>GET /zoos：列出所有动物园
+POST /zoos：新建一个动物园
+GET /zoos/ID：获取某个指定动物园的信息
+PUT /zoos/ID：更新某个指定动物园的信息（必须提供该动物园的全部信息）
+PATCH /zoos/ID：更新某个指定动物园的信息（只需提供该动物园的部分信息），所以一般更新使用patch
+DELETE /zoos/ID：删除某个动物园
+GET /zoos/ID/animals：列出某个指定动物园的所有动物
+DELETE /zoos/ID/animals/ID：删除某个指定动物园的指定动物</code></pre>
             
         </section>
         <footer class="blog-post-page-tags">
@@ -164,12 +219,10 @@
     	
     	
 		
-			<a href="/2019/06/11/drf03/" class="blog-post-page-readmore-prev" data-toggle="tooltip" data-placement="top" title="Django-Rest-Framework-02-请求和响应">上一篇</a>
-		
 
 		
 		
-			<a href="/2019/06/11/drf01/" class="blog-post-page-readmore-next" data-toggle="tooltip" data-placement="top" title="Django-Rest-Framework-01-快速入门">下一篇</a>
+			<a href="/2019/06/11/drf02/" class="blog-post-page-readmore-next" data-toggle="tooltip" data-placement="top" title="Django-Rest-Framework-02-Rest接口新版写法">下一篇</a>
 		
 
         <div style="clear: both;"></div>
@@ -272,7 +325,7 @@
                 return out;
             }
             // 生成
-            var qrcode= $('.post-qrcode-content-canvas').qrcode({width: 150,height: 150,text: toUtf8("http://yoursite.com/2019/06/11/drf02/")}).hide();
+            var qrcode= $('.post-qrcode-content-canvas').qrcode({width: 150,height: 150,text: toUtf8("http://yoursite.com/2019/06/11/drf03/")}).hide();
             var canvas=qrcode.find('canvas').get(0);
             $('.post-qrcode-content-img').attr('src',canvas.toDataURL('image/jpg'));
         </script>
