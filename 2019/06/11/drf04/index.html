@@ -1,0 +1,405 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!doctype html>
+<html lang="zh">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+  <meta name="renderer" content="webkit">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" , user-scalable="no"">
+  <title>Django-Rest-Framework-04-基于类视图的视图函数FireinDark的个人博客</title>
+  <link rel="shortcut icon" href="favicon.ico">
+  
+    
+    
+      <link rel="stylesheet" href="/css/bootstrap.min.css">
+    
+      <link rel="stylesheet" href="/css/font-awesome.min.css">
+    
+      <link rel="stylesheet" href="/css/atom-one-dark.css">
+    
+      <link rel="stylesheet" href="/css/jquery.fancybox.css">
+    
+      <link rel="stylesheet" href="/css/nprogress.min.css">
+    
+      <link rel="stylesheet" href="/css/valine.css">
+    
+      <link rel="stylesheet" href="/css/life.css">
+    
+  
+
+  
+
+  <!-- jQuery first, then Tether, then Bootstrap JS. -->
+  
+  
+  
+    <script src="/js/jquery-2.2.4.min.js"></script>
+  
+    <script src="https://cdn1.lncld.net/static/js/3.1.0/av-min.js"></script>
+  
+    <script src="/js/jquery.pjax.js"></script>
+  
+    <script src="/js/nprogress.min.js"></script>
+  
+    <script src="/js/tether.min.js"></script>
+  
+    <script src="/js/bootstrap.min.js"></script>
+  
+    <script src="/js/highlight.min.js"></script>
+  
+    <script src="/js/highlightjs-line-numbers.min.js"></script>
+  
+    <script src="/js/jquery.fancybox.js"></script>
+  
+    <script src="/js/jquery.qrcode.min.js"></script>
+  
+    <script src="/js/Valine.min.js"></script>
+  
+  
+</head>
+<body>
+<script>AV.init({appId:'26YW6K9yel5b96iVJgRxieQY-gzGzoHsz',appKey:'7ST1CW6DLcaRBahn4rhmBrsE'});</script>
+<script type="text/javascript">
+      var config = {
+            ClasS: 'Counter',
+            el:'.views',
+            elP: '.views-post'
+      }
+</script>
+<div class="container">
+    <div class="row blog-box-shadow">
+        <!--博客主栏开始-->
+        <div class="col-xl-9 col-lg-12 blog-main" id="pjax-box">
+            <header class="blog-header">
+                <a href="http://yoursite.com" class="blog-header-mobile-title">FireinDark的个人博客</a>
+                <a href="javascript:;" class="blog-header-navbar-btn"><i class="fa fa-bars"></i></a>
+                <nav class="blog-header-navbar blog-header-fixed">
+                    <ul class="blog-navbar-links">
+                        
+                          <li class="blog-nav-item"><a href="/" class="transition">首页</a></li>
+                        
+                          <li class="blog-nav-item"><a href="/about/" class="transition">关于</a></li>
+                        
+                          <li class="blog-nav-item"><a href="/links/" class="transition">链接</a></li>
+                        
+                        <div class="blog-navbar-right">
+                            <form action>
+                                <div class="input-group">
+                                    <input type="text" class="blog-header-search" placeholder="search...">
+                                    <buttn type="submit" class="blog-header-search-btn"><i class="fa fa-search"></i></buttn>
+                                </div>
+                            </form>
+                        </div>
+                    </ul>
+                </nav>
+            </header>
+                
+<header class="blog-post-page-title">
+    <h4>Django-Rest-Framework-04-基于类视图的视图函数</h4>
+    <time datetime="2019-06-11T10:52:23.000Z"><i class="fa fa-clock-o"></i>2019-06-11</time>
+    
+    
+    <span>
+        <i class="fa fa-eye"></i>
+        <span id="/2019/06/11/drf04/" class="views views-post" title="Django-Rest-Framework-04-基于类视图的视图函数"></span>
+    </span>
+    
+    
+    
+	
+        <span><i class="fa fa-folder-o"></i>
+    		
+    	       <a href="/categories/Python/" rel="categories" data-toggle="tooltip" data-placement="top" title="Linux">Python</a>
+    		
+        </span>
+	
+    
+</header>
+<div class="blog-main-post blog-post-page-box">
+    <article class="blog-post-block blog-post-page-content">
+        <section>
+            
+                <h2 id="1-基于类的视图函数（views-py"><a href="#1-基于类的视图函数（views-py" class="headerlink" title="1. 基于类的视图函数（views.py)"></a>1. 基于类的视图函数（views.py)</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> snippets.models <span class="keyword">import</span> Snippet</span><br><span class="line"><span class="keyword">from</span> snippets.serializers <span class="keyword">import</span> SnippetSerializer</span><br><span class="line"><span class="keyword">from</span> django.http <span class="keyword">import</span> Http404</span><br><span class="line"><span class="comment"># APIView </span></span><br><span class="line"><span class="keyword">from</span> rest_framework.views <span class="keyword">import</span> APIView</span><br><span class="line"><span class="comment"># 返回对象</span></span><br><span class="line"><span class="keyword">from</span> rest_framework.response <span class="keyword">import</span> Response</span><br><span class="line"><span class="comment"># 状态码</span></span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> status</span><br><span class="line"></span><br><span class="line"><span class="comment"># 多个对象</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SnippetList</span><span class="params">(APIView)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self, request, format=None)</span>:</span></span><br><span class="line">        snippets = Snippet.objects.all()</span><br><span class="line">        serializer = SnippetSerializer(snippets, many=<span class="literal">True</span>)</span><br><span class="line">        <span class="keyword">return</span> Response(serializer.data)</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">post</span><span class="params">(self, request, format=None)</span>:</span></span><br><span class="line">        serializer = SnippetSerializer(data=request.data)</span><br><span class="line">        <span class="keyword">if</span> serializer.is_valid():</span><br><span class="line">            serializer.save()</span><br><span class="line">            <span class="keyword">return</span> Response(serializer.data, status=status.HTTP_201_CREATED)</span><br><span class="line">        <span class="keyword">return</span> Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)</span><br><span class="line">    </span><br><span class="line">        </span><br><span class="line"><span class="comment"># 单个对象的部分修改（APIView提供了一些request和response对象）</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SnippetDetail</span><span class="params">(APIView)</span>:</span></span><br><span class="line">    <span class="string">"""</span></span><br><span class="line"><span class="string">    检索，更新或删除一个实例</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    <span class="comment"># 首先获取对象， 发生异常就抛出404页面</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_object</span><span class="params">(self, pk)</span>:</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="keyword">return</span> Snippet.objects.get(pk=pk)</span><br><span class="line">        <span class="keyword">except</span> Snippet.DoesNotExist:</span><br><span class="line">            <span class="keyword">raise</span> Http404</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self, request, pk, format=None)</span>:</span></span><br><span class="line">        snippet = self.get_object(pk)</span><br><span class="line">        serializer = SnippetSerializer(snippet)</span><br><span class="line">        <span class="keyword">return</span> Response(serializer.data)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">put</span><span class="params">(self, request, pk, format=None)</span>:</span></span><br><span class="line">        snippet = self.get_object(pk)</span><br><span class="line">        serializer = SnippetSerializer(snippet, data=request.data)</span><br><span class="line">        <span class="keyword">if</span> serializer.is_valid():</span><br><span class="line">            serializer.save()</span><br><span class="line">            <span class="keyword">return</span> Response(serializer.data)</span><br><span class="line">        <span class="keyword">return</span> Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">delete</span><span class="params">(self, request, pk, format=None)</span>:</span></span><br><span class="line">        snippet = self.get_object(pk)</span><br><span class="line">        snippet.delete()</span><br><span class="line">        <span class="keyword">return</span> Response(status=status.HTTP_204_NO_CONTENT)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重构urls.py</span></span><br><span class="line">urlpatterns = [</span><br><span class="line">    url(<span class="string">r'^snippets/$'</span>, views.SnippetList.as_view()),</span><br><span class="line">    url(<span class="string">r'^snippets/(?P&lt;pk&gt;[0-9]+)/$'</span>, views.SnippetDetail.as_view()),</span><br><span class="line">]</span><br><span class="line"><span class="comment"># 后缀</span></span><br><span class="line">urlpatterns = format_suffix_patterns(urlpatterns)</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-基于Mixin类重构视图类"><a href="#2-基于Mixin类重构视图类" class="headerlink" title="2. 基于Mixin类重构视图类"></a>2. 基于Mixin类重构视图类</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> snippets.models <span class="keyword">import</span> Snippet</span><br><span class="line"><span class="keyword">from</span> snippets.serializers <span class="keyword">import</span> SnippetSerializer</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> mixins</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> generics</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SnippetList</span><span class="params">(mixins.ListModelMixin,</span></span></span><br><span class="line"><span class="class"><span class="params">                  mixins.CreateModelMixin,</span></span></span><br><span class="line"><span class="class"><span class="params">                  generics.GenericAPIView)</span>:</span></span><br><span class="line">    <span class="comment"># 雷打不动，必须的</span></span><br><span class="line">    queryset = Snippet.objects.all()</span><br><span class="line">    serializer_class = SnippetSerializer</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.list(request, *args, **kwargs)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">post</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.create(request, *args, **kwargs)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>CreateModelMixin: 定义了创建一个序列对象的方法create(self, request, <em>args, *</em>kwargs)，保存方法perform_create(self, serializer)，成功获取请求头的方法：get_success_headers(self, data)</li>
+<li>ListModelMixin： 定义了一个获取查询集的方法, many=True：list(self, request, <em>args, *</em>kwargs)</li>
+<li>RetrieveModelMixin: 定义了一个检索方法，retrieve(self, request, <em>args, *</em>kwargs)</li>
+<li>UpdateModelMixin： 更新一个模型实例，update(self, request, <em>args, *</em>kwargs)</li>
+<li>DestroyModelMixin： 删除一个模型实例，方法destroy(self, request, <em>args, *</em>kwargs)</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> snippets.models <span class="keyword">import</span> Snippet</span><br><span class="line"><span class="keyword">from</span> snippets.serializers <span class="keyword">import</span> SnippetSerializer</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> mixins</span><br><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> generics</span><br><span class="line"><span class="comment"># 重构单个实例处理方法</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SnippetList</span><span class="params">(mixins.ListModelMixin,</span></span></span><br><span class="line"><span class="class"><span class="params">                  mixins.CreateModelMixin,</span></span></span><br><span class="line"><span class="class"><span class="params">                  generics.GenericAPIView)</span>:</span></span><br><span class="line">    queryset = Snippet.objects.all()</span><br><span class="line">    serializer_class = SnippetSerializer</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.list(request, *args, **kwargs)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">post</span><span class="params">(self, request, *args, **kwargs)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.create(request, *args, **kwargs)</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-复合功能的View类"><a href="#3-复合功能的View类" class="headerlink" title="3.复合功能的View类"></a>3.复合功能的View类</h2><ol>
+<li>GenericAPIView：基本的View类，定义了一些常用的方法</li>
+</ol>
+<ul>
+<li>get_queryset： 获取所有查询集，返回序列器中指定queryset模型的全部对象</li>
+<li>get_object： 根据传入的查询参数（lookup_url_kwarg or lookup_field)获取查询对象，然后返回， 一般进行联合查询时， 需要重写此方法</li>
+<li>get_serializer: 获取序列化实例，传入的参数需要通过验证</li>
+<li>get_serializer_context： 返回序列化的类，api视图中看到的那一大串</li>
+<li>paginate_queryset： 进行分页，返回分页后的单页结果集</li>
+<li>get_paginated_response：返回分也好的结果集到前台</li>
+</ul>
+<ol start="2">
+<li>CreateAPIView</li>
+<li>ListAPIView</li>
+<li>RetrieveAPIView</li>
+<li>DestroyAPIView</li>
+<li>UpdateAPIView</li>
+<li>ListCreateAPIView</li>
+<li>RetrieveUpdateAPIView</li>
+<li>RetrieveDestroyAPIView</li>
+<li>RetrieveUpdateDestroyAPIView</li>
+</ol>
+            
+        </section>
+        <footer class="blog-post-page-tags">
+        
+			
+				
+			<a href="/tags/Django-Rest-Framework/" rel="tag" data-toggle="tooltip" data-placement="top" title="Linux">Django-Rest-Framework</a>
+				
+			
+		
+        </footer>
+    </article>
+    <article class="blog-post-page-readmore">
+    	
+    	
+		
+
+		
+		
+			<a href="/2019/06/11/drf03/" class="blog-post-page-readmore-next" data-toggle="tooltip" data-placement="top" title="Django-Rest-Framework-03-请求和响应">下一篇</a>
+		
+
+        <div style="clear: both;"></div>
+    </article>
+
+    <article class="blog-post-block blog-post-page-content">
+            <div class="row">
+            
+                <div class="col-md-4 col-sm-4 post-page-more-btn">
+                    <span class="post-comments-btn btn btn-info btn-block" data-toggle="tooltip" data-placement="top" title="本站采用Disqus评论组件，若您没有科学上网可能会无法查看并评论">加载评论</span>
+                </div>
+            
+                <div class="col-md-4 col-sm-4 post-page-more-btn">
+                    <span data-toggle="modal" data-target="#post-donate-content">
+                        <span id="post-donate-btn" class="btn btn-danger btn-block" data-toggle="tooltip" data-placement="top" title="如果您觉得本文还不错或者对您有帮助，可以考虑打赏一下作者哦">打赏本文</span>
+                    </span>
+                </div>
+                <div class="col-md-4 col-sm-4 post-page-more-btn">
+                    <span data-toggle="modal" data-target="#post-qrcode-content">
+                        <span><span id="post-qrcode-btn" class="btn btn-success btn-block" data-toggle="tooltip" data-placement="top" title="微信扫描二维码手机端查看本文及分享本文">二维码</span></span>
+                    </span>
+                </div>
+            </div>
+        <div class="post-more-function-br"></div>
+
+        <div class="modal fade" id="post-donate-content" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">打赏本文</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row post-donate-content">
+                            <div class="col-md-4">
+                                <p>支付宝</p>
+                                <img class="post-donate-content-img no-lightbox" src="http://dl.weic96.cn/logo.png">
+                            </div>
+                            <div class="col-md-4">
+                                <p>微信</p>
+                                <img class="post-donate-content-img no-lightbox" src="http://dl.weic96.cn/logo.png">
+                            </div>
+                            <div class="col-md-4">
+                                <p>财付通</p>
+                                <img class="post-donate-content-img no-lightbox" src="http://dl.weic96.cn/logo.png">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="post-qrcode-content" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">文章二维码</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row post-qrcode-content">
+                            <span class="post-qrcode-content-canvas"></span>
+                            <img class="post-qrcode-content-img no-lightbox" src>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            // post QRcode
+            // 中文转码
+            function toUtf8(str) {
+                var out, i, len, c;
+                out = "";
+                len = str.length;
+                for (i = 0; i < len; i++) {
+                    c = str.charCodeAt(i);
+                    if ((c >= 0x0001) && (c <= 0x007F)) {
+                        out += str.charAt(i);
+                    } else if (c > 0x07FF) {
+                        out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));
+                        out += String.fromCharCode(0x80 | ((c >> 6) & 0x3F));
+                        out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+                    } else {
+                        out += String.fromCharCode(0xC0 | ((c >> 6) & 0x1F));
+                        out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+                    }
+                }
+                return out;
+            }
+            // 生成
+            var qrcode= $('.post-qrcode-content-canvas').qrcode({width: 150,height: 150,text: toUtf8("http://yoursite.com/2019/06/11/drf04/")}).hide();
+            var canvas=qrcode.find('canvas').get(0);
+            $('.post-qrcode-content-img').attr('src',canvas.toDataURL('image/jpg'));
+        </script>
+
+        
+    </article>
+    
+</div>
+
+                
+            <footer class="blog-footer">
+                <p class="blog-footer-left">Copyright ©  2019 <a href="http://yoursite.com">FireinDark的个人博客</a></p>
+                <p class="blog-footer-right">Powered by <a href="https://hexo.io" target="_blank">Hexo</a>,Theme <a href="https://note.isweic.com/themes-life/" target="_blank">Life</a></p>
+            </footer>
+        </div><!--博客主栏结束-->
+        <!--博客侧边栏开始-->
+        <div class="col-xl-3 blog-sidebar">
+            <div class="blog-sidebar-title">
+                <a href>FireinDark的个人博客</a>
+            </div>
+            <div class="blog-sidebar-logo">
+                <img src="avatar.jpg">
+            </div>
+            <div class="blog-sidebar-count blog-sidebar-padding">
+                <div class="blog-sidebar-count-left">
+                    <p class="blog-sidebar-count-p">5</p>
+                    <span class="blog-sidebar-count-span">文章</span>
+                </div>
+                <div class="blog-sidebar-count-right">
+                    <p class="blog-sidebar-count-p">2</p>
+                    <span class="blog-sidebar-count-span">标签</span>
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+            <div class="blog-sidebar-icon blog-sidebar-padding">
+                <ul>
+                    <li><a href="https://github.com/FireinDark" class="icon-github" target="_blank" data-toggle="tooltip" data-placement="top" title="Github"><i class="fa fa-github"></i></a></li>
+                    <li><a href class="icon-weibo" target="_blank" data-toggle="tooltip" data-placement="top" title="新浪微博"><i class="fa fa-weibo"></i></a></li>
+                    <li><a href class="icon-twitter" target="_blank" data-toggle="tooltip" data-placement="top" title="Twitter"><i class="fa fa-twitter"></i></a></li>
+                    <!--<li><a href="" class="icon-facebook" target="_blank" data-toggle="tooltip" data-placement="top" title="FaceBook"><i class="fa fa-facebook"></i></a></li>-->
+                    <li><a href="mailto:993378951@qq.com" class="icon-email" data-toggle="tooltip" data-placement="top" title="E-Mail"><i class="fa fa-envelope"></i></a></li>
+                    <li><a href class="icon-rss" data-toggle="tooltip" target="_blank" data-placement="top" title="RSS"><i class="fa fa-rss"></i></a></li>
+                </ul>
+            </div>
+            <div class="blog-sidebar-categories">
+                <h4 class="blog-sidebar-h4"><i class="fa fa-folder-open"></i>&nbsp;文章分类</h4>
+                <ul class="list-group blog-sidebar-padding">
+                  
+                    
+                      <li class="list-group-item justify-content-between">
+                          <a href="/categories/Python/">Python</a>
+                          <span class="badge badge-default badge-pill">4</span>
+                      </li>
+                    
+                      <li class="list-group-item justify-content-between">
+                          <a href="/categories/计算机/">计算机</a>
+                          <span class="badge badge-default badge-pill">1</span>
+                      </li>
+                    
+                  
+                </ul>
+            </div>
+            <div class="blog-sidebar-tags">
+                <h4 class="blog-sidebar-h4"><i class="fa fa-tag"></i>&nbsp;标签云</h4>
+                <ul class="blog-sidebar-tags-ul blog-sidebar-padding">
+                  
+                    
+                      <li><a href="/tags/Django-Rest-Framework/" class="tag-could" data-toggle="tooltip" data-placement="top" title="Django-Rest-Framework">Django-Rest-Framework</a></li>
+                    
+                      <li><a href="/tags/网络模型/" class="tag-could" data-toggle="tooltip" data-placement="top" title="网络模型">网络模型</a></li>
+                    
+                  
+                </ul>
+            </div>
+            <script>
+              // 博客侧栏标签云随机色
+              var tag_cloud = $('.tag-could');
+              tag_cloud.each(function () {
+                  var Cnum = 9;
+                  var Crand = parseInt(Math.random() * Cnum);
+                  $(this).addClass("tag-could" + Crand);
+              })
+            </script>
+            <!--返回顶部按钮-->
+            <div class="retop">
+                <i class="fa fa-angle-up"></i>
+            </div>
+        </div><!--博客侧边栏结束-->
+    </div>
+</div>
+<script src="/js/LeanStatistics.min.js"></script>
+<script src="/js/Life.js"></script>
+<script type="text/javascript">
+    hljs.initHighlightingOnLoad();
+    hljs.initLineNumbersOnLoad();
+    otherF();
+    LeanStatistics();
+    $(document).pjax('a', '#pjax-box', {fragment:'#pjax-box', timeout:8000}).on('pjax:complete', function() {
+      $('pre code').each(function(i, block){
+        hljs.highlightBlock(block);
+      })
+      $('code.hljs').each(function(i, block) {
+        hljs.lineNumbersBlock(block);
+      });
+      LeanStatistics();
+    }).on('pjax:start', function() { NProgress.start(); }).on('pjax:end',   function() {
+      NProgress.done();
+      otherF();
+    });
+</script>
+</body>
+</html>
