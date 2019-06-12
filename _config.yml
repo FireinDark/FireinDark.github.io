@@ -80,5 +80,5 @@ theme: life
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repository: https://github.com/FireinDark/FireinDark.github.io.git
+  repository: git@person:FireinDark/FireinDark.github.io.git
   branch: master

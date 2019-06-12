@@ -1,6 +1,6 @@
 ---
 title: Django-Rest-Framework-01-快速入门
-date: 2019-06-11 18:34:26
+date: 2019-06-11 18:24:26
 tags: Django-Rest-Framework
 categories: Python
 ---
@@ -10,8 +10,8 @@ Django-Rest-Framework快速入门
 <!-- more -->
 
 ## 1. 创建模型(models.py)
-from django.db import models
-# 高亮文本， 两种风格
+    from django.db import models
+    # 高亮文本， 两种风格
     from pygments.lexers import get_all_lexers
     from pygments.styles import get_all_styles
 

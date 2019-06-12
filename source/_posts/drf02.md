@@ -14,8 +14,11 @@ Rest接口新版写法
 2. 支持ORM和非ORM数据源的序列化
 3. 可以自定义，基于功能的常规视图
 
-## 简单的接口写法
-1. 设置settings
+## 简单的接口写法  
+
+1. 设置settings  
+
+```
     INSTALLED_APPS = (
          ...
          'rest_framework',
@@ -30,10 +33,11 @@ Rest接口新版写法
     # 每页显示的个数
      'PAGE_SIZE': 10
     }
-    
+```
 
-2. REST框架的登录和注销视图,设置urls.py,
+2. REST框架的登录和注销视图,设置urls.py  
 
+```
     from rest_framework import routers
     # 建立一个路由器对象
     router = routers.DefaultRouter()
@@ -44,19 +48,22 @@ Rest接口新版写法
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     ]
     # URL路径可以是任何你想要的，但你必须包括'rest_framework.urls'与'rest_framework'命名空间, 1.9以前
+```  
 
-3. 在app中添加我们的序列器，serializer.py
+3. 在app中添加我们的序列器，serializer.py  
+
+```
     from django.conf.urls import url, include
     from django.contrib.auth.models import User
     from rest_framework import routers, serializers, viewsets
 
-# Serializers define the API representation.
-    class UserSerializer(serializers.HyperlinkedModelSerializer):
-        class Meta:
-            model = User
-            # 定义了我们序列化的模型和显示的字段， url为网络接口
-            fields = ('url', 'username', 'email', 'is_staff')
-            
+    # Serializers define the API representation.
+        class UserSerializer(serializers.HyperlinkedModelSerializer):
+            class Meta:
+                model = User
+                # 定义了我们序列化的模型和显示的字段， url为网络接口
+                fields = ('url', 'username', 'email', 'is_staff')
+                
 
     class UserViewSet(viewsets.ModelViewSet):
         # 查询对象集
@@ -64,3 +71,4 @@ Rest接口新版写法
         # 序列化的类名
         serializer_class = UserSerializer
         # 固定写法！不能改名字！
+```
