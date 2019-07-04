@@ -171,7 +171,7 @@ rm -r snippets/migrations</code></pre><h2 id="4-添加用户控制入口"><a hre
 <ol start="3">
 <li>添加url</li>
 </ol>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">url(<span class="string">r'^users/$'</span>, views.UserList.as_view()),</span><br><span class="line">url(<span class="string">r'^users/(?P&lt;pk&gt;[0-9]+)/$'</span>, views.UserDetail.as_view()),</span><br></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">url(<span class="string">r'^users/$'</span>, views.UserList.as_view()),</span><br><span class="line">url(<span class="string">r'^users/(?P&lt;pk&gt;[0-9]+)/$'</span>, views.UserDetail.as_view()),</span><br></pre></td></tr></table></figure>
 
 <ol start="4">
 <li>连接Snippets和Users<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 通过重写perform_create()方法</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">perform_create</span><span class="params">(<span class="keyword">self</span>, serializer)</span></span><span class="symbol">:</span></span><br><span class="line">    serializer.save(owner=<span class="keyword">self</span>.request.user)</span><br></pre></td></tr></table></figure>
@@ -184,9 +184,9 @@ rm -r snippets/migrations</code></pre><h2 id="4-添加用户控制入口"><a hre
 <h2 id="7-为我们的视图函数添加权限认证"><a href="#7-为我们的视图函数添加权限认证" class="headerlink" title="7.为我们的视图函数添加权限认证"></a>7.为我们的视图函数添加权限认证</h2><ul>
 <li>IsAuthenticatedOrReadOnly： 确保认证用户拥有读写权限，匿名用户只读</li>
 </ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> permissions</span><br><span class="line"><span class="comment"># 在SnippetList and SnippetDetail视图函数类中添加</span></span><br><span class="line">permission_classes = (permissions.IsAuthenticatedOrReadOnly,)</span><br></pre></td></tr></table></figure>
+<figure class="highlight capnproto"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> rest_framework <span class="keyword">import</span> permissions</span><br><span class="line"><span class="comment"># 在SnippetList and SnippetDetail视图函数类中添加</span></span><br><span class="line">permission_classes = (permissions.IsAuthenticatedOrReadOnly,)</span><br></pre></td></tr></table></figure>
 
-<h2 id="8-添加登录窗口url-rest-framework自带"><a href="#8-添加登录窗口url-rest-framework自带" class="headerlink" title="8. 添加登录窗口url,rest_framework自带"></a>8. 添加登录窗口url,rest_framework自带</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">urlpatterns += [</span><br><span class="line">    <span class="comment"># 前面正则表达式，可以随便怎么写，但是namespace,必须要是'rest_framework'</span></span><br><span class="line">    url(<span class="string">r'^api-auth/'</span>, include(<span class="string">'rest_framework.urls'</span>,</span><br><span class="line">                               namespace=<span class="string">'rest_framework'</span>)),</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<h2 id="8-添加登录窗口url-rest-framework自带"><a href="#8-添加登录窗口url-rest-framework自带" class="headerlink" title="8. 添加登录窗口url,rest_framework自带"></a>8. 添加登录窗口url,rest_framework自带</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">urlpatterns += [</span><br><span class="line">    <span class="comment"># 前面正则表达式，可以随便怎么写，但是namespace,必须要是'rest_framework'</span></span><br><span class="line">    url(<span class="string">r'^api-auth/'</span>, include(<span class="string">'rest_framework.urls'</span>,</span><br><span class="line">                               namespace=<span class="string">'rest_framework'</span>)),</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
 
 <h2 id="9-用户权限内等级管理"><a href="#9-用户权限内等级管理" class="headerlink" title="9. 用户权限内等级管理"></a>9. 用户权限内等级管理</h2><ul>
 <li><p>在app中创建permissions.py</p>
@@ -348,7 +348,7 @@ rm -r snippets/migrations</code></pre><h2 id="4-添加用户控制入口"><a hre
             </div>
             <div class="blog-sidebar-count blog-sidebar-padding">
                 <div class="blog-sidebar-count-left">
-                    <p class="blog-sidebar-count-p">7</p>
+                    <p class="blog-sidebar-count-p">9</p>
                     <span class="blog-sidebar-count-span">文章</span>
                 </div>
                 <div class="blog-sidebar-count-right">
@@ -379,7 +379,7 @@ rm -r snippets/migrations</code></pre><h2 id="4-添加用户控制入口"><a hre
                     
                       <li class="list-group-item justify-content-between">
                           <a href="/categories/Go/">Go</a>
-                          <span class="badge badge-default badge-pill">1</span>
+                          <span class="badge badge-default badge-pill">3</span>
                       </li>
                     
                       <li class="list-group-item justify-content-between">
